@@ -1,18 +1,125 @@
 # 🎬 YouTube Downloader Web (.mp4 / .mp3)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey.svg)](https://flask.palletsprojects.com/)
-[![yt-dlp](https://img.shields.io/badge/powered%20by-yt--dlp-red.svg)](https://github.com/yt-dlp/yt-dlp)
-[![Linux Systemd](https://img.shields.io/badge/service-systemd--ready-green.svg)](https://systemd.io/)
+<p align="center">
+  <a href="#-english"><b>English</b></a> • <a href="#-español"><b>Español</b></a>
+</p>
 
-Aplicación web local, rápida y moderna para descargar videos y audios de YouTube fácilmente seleccionando el formato y la calidad exacta deseada, con barra de progreso en vivo y sin anuncios.
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python 3.10+"></a>
+  <a href="https://flask.palletsprojects.com/"><img src="https://img.shields.io/badge/Flask-3.x-lightgrey.svg" alt="Flask"></a>
+  <a href="https://github.com/yt-dlp/yt-dlp"><img src="https://img.shields.io/badge/powered%20by-yt--dlp-red.svg" alt="yt-dlp"></a>
+  <a href="https://systemd.io/"><img src="https://img.shields.io/badge/service-systemd--ready-green.svg" alt="Linux Systemd"></a>
+</p>
 
 ---
 
-## ✨ Características Principales
+## 🇬🇧 English
 
-- 🎨 **Interfaz Web Moderna & Responsiva**: Diseñada con Tailwind CSS en tema oscuro, adaptable a cualquier pantalla.
+A modern, fast, and local web application to download YouTube videos and audio with custom quality selection, real-time progress, and zero ads. Includes bilingual UI support (English by default, with an instant switch to Spanish).
+
+### ✨ Features
+
+- 🎨 **Modern & Responsive Web UI**: Clean dark theme built with Tailwind CSS, Lucide icons, and bilingual support (EN/ES switcher).
+- 📋 **One-Click Paste**: Quick button to paste YouTube URLs directly from the clipboard.
+- 🔍 **Instant Metadata Preview**: Displays video title, author, duration, and thumbnail before downloading.
+- 🎬 **Video MP4**:
+  - Dynamic resolution picker: **Best available**, **4K (2160p)**, **2K (1440p)**, **1080p (Full HD)**, **720p (HD)**, **480p**, and **360p**.
+  - Prioritizes universal **H.264 (AVC1)** video and **AAC** audio for maximum compatibility with all media players and video editors.
+- 🎵 **Audio MP3**:
+  - High-fidelity audio extraction with selectable bitrate: **320 kbps (Peak fidelity)**, **256 kbps**, **192 kbps (Standard CD)**, and **128 kbps (Lightweight)**.
+  - Automatic ID3 metadata and tag embedding.
+- ⚡ **Real-Time Progress Tracking**: Live interactive progress bar with percentage, download speed (MB/s), and estimated time remaining (ETA).
+- 📂 **Dual Save Options**:
+  - Download directly to your browser.
+  - Automatic storage in the local `./downloads` folder with a one-click button to open the folder in your operating system.
+- 🐧 **Background Service Ready**: Native integration as a Linux `systemd --user` service for seamless background operation.
+
+### 🚀 Prerequisites
+
+- **Python 3.10** or higher.
+- **FFmpeg** installed on your system (`sudo apt install ffmpeg`).
+
+### 🛠️ Quick Installation & Usage
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/FloxTBoTyy/youtube-downloader-web.git
+   cd youtube-downloader-web
+   ```
+
+2. **Start the application:**
+   ```bash
+   chmod +x start.sh
+   ./start.sh
+   ```
+   *The script automatically sets up a `.venv` virtual environment, installs/updates dependencies, and launches your default browser.*
+
+3. **Open in your browser:**
+   - **http://descargador-yt.localhost:5050**
+   - or http://127.0.0.1:5050
+
+### ⚙️ Running as a System Background Service (Linux / Ubuntu)
+
+To keep the downloader running continuously in the background on boot without needing an open terminal:
+
+1. **Create the user systemd folder:**
+   ```bash
+   mkdir -p ~/.config/systemd/user
+   ```
+
+2. **Create `~/.config/systemd/user/youtube-downloader.service`:**
+   ```ini
+   [Unit]
+   Description=YouTube Downloader Web Service
+   After=network.target
+
+   [Service]
+   Type=simple
+   WorkingDirectory=/path/to/youtube-downloader-web
+   Environment=PORT=5050
+   Environment=PYTHONUNBUFFERED=1
+   ExecStart=/path/to/youtube-downloader-web/.venv/bin/python app.py
+   Restart=always
+   RestartSec=3
+
+   [Install]
+   WantedBy=default.target
+   ```
+
+3. **Enable and start the service:**
+   ```bash
+   systemctl --user daemon-reload
+   systemctl --user enable --now youtube-downloader.service
+   ```
+
+4. **Useful management commands:**
+   ```bash
+   # Check service status
+   systemctl --user status youtube-downloader.service
+
+   # Restart service
+   systemctl --user restart youtube-downloader.service
+   ```
+
+### ⚖️ Legal Disclaimer
+
+> [!IMPORTANT]
+> This project was developed strictly for **educational and personal backup purposes**. 
+> 
+> It is designed to allow users to archive their own audiovisual content, public domain material, or content distributed under permissive open licenses (such as *Creative Commons*). The author does not endorse, promote, or take responsibility for any unauthorized downloading, copyright infringement, or violation of YouTube Terms of Service by third parties.
+> 
+> Always respect intellectual property rights and the applicable copyright laws in your jurisdiction.
+
+---
+
+## 🇪🇸 Español
+
+Aplicación web local, rápida y moderna para descargar videos y audios de YouTube fácilmente seleccionando el formato y la calidad exacta deseada, con barra de progreso en vivo y sin anuncios. Incluye interfaz bilingüe (inglés por defecto y conmutador instantáneo a español).
+
+### ✨ Características Principales
+
+- 🎨 **Interfaz Web Moderna & Responsiva**: Diseñada con Tailwind CSS en tema oscuro, adaptable a cualquier pantalla con selector de idioma (EN/ES).
 - 📋 **Pegado Rápido**: Botón integrado para pegar directamente la URL desde el portapapeles.
 - 🔍 **Previsualización Instantánea**: Muestra título, autor, duración y miniatura del video antes de descargar.
 - 🎬 **Video MP4**:
@@ -27,16 +134,12 @@ Aplicación web local, rápida y moderna para descargar videos y audios de YouTu
   - Almacenamiento en carpeta local `./downloads` con botón de acceso directo en el explorador de archivos.
 - 🐧 **Servicio en Segundo Plano**: Soporte nativo para ejecutarse como servicio `systemd --user` en Linux.
 
----
-
-## 🚀 Requisitos Previos
+### 🚀 Requisitos Previos
 
 - **Python 3.10** o superior.
 - **FFmpeg** instalado en el sistema (`sudo apt install ffmpeg`).
 
----
-
-## 🛠️ Instalación y Uso Rápido
+### 🛠️ Instalación y Uso Rápido
 
 1. **Clonar el repositorio:**
    ```bash
@@ -49,24 +152,14 @@ Aplicación web local, rápida y moderna para descargar videos y audios de YouTu
    chmod +x start.sh
    ./start.sh
    ```
-   *El script creará automáticamente el entorno virtual `.venv`, instalará/actualizará `yt-dlp` y abrirá la web en tu navegador predeterminado.*
 
 3. **Abrir en el navegador:**
    - **http://descargador-yt.localhost:5050**
    - o http://127.0.0.1:5050
 
----
+### ⚙️ Ejecutar como Servicio del Sistema (Linux / Ubuntu)
 
-## ⚙️ Ejecutar como Servicio del Sistema (Linux / Ubuntu)
-
-Para que el descargador esté siempre activo en segundo plano al encender el equipo sin necesidad de abrir terminales:
-
-1. **Copiar o crear el archivo de servicio:**
-   ```bash
-   mkdir -p ~/.config/systemd/user
-   ```
-
-2. **Crear `~/.config/systemd/user/youtube-downloader.service`:**
+1. **Crear archivo de servicio `~/.config/systemd/user/youtube-downloader.service`:**
    ```ini
    [Unit]
    Description=YouTube Downloader Web Service
@@ -85,24 +178,13 @@ Para que el descargador esté siempre activo en segundo plano al encender el equ
    WantedBy=default.target
    ```
 
-3. **Habilitar e iniciar:**
+2. **Habilitar e iniciar:**
    ```bash
    systemctl --user daemon-reload
    systemctl --user enable --now youtube-downloader.service
    ```
 
-4. **Comandos de gestión:**
-   ```bash
-   # Comprobar estado
-   systemctl --user status youtube-downloader.service
-
-   # Reiniciar servicio
-   systemctl --user restart youtube-downloader.service
-   ```
-
----
-
-## ⚖️ Descargo de Responsabilidad Legal (Disclaimer)
+### ⚖️ Descargo de Responsabilidad Legal (Disclaimer)
 
 > [!IMPORTANT]
 > Este proyecto ha sido desarrollado con fines exclusivamente **educativos y de respaldo/copia de seguridad personal**. 
@@ -113,6 +195,6 @@ Para que el descargador esté siempre activo en segundo plano al encender el equ
 
 ---
 
-## 📄 Licencia
+## 📄 License / Licencia
 
-Este proyecto está bajo la Licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.

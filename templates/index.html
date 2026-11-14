@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <!-- Charset & Viewport -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary Meta Tags / SEO -->
+  <title>YouTube Downloader Web | Descarga Video MP4 y Audio MP3 en Alta Calidad</title>
+  <meta name="title" content="YouTube Downloader Web | Descarga Video MP4 y Audio MP3 en Alta Calidad">
+  <meta name="description" content="Aplicación web moderna, local y gratuita para descargar videos y música de YouTube en formatos MP4 y MP3 con selector de calidad (4K, 1080p, 720p, 320kbps) y progreso en tiempo real.">
+  <meta name="keywords" content="youtube downloader, descargar youtube, youtube a mp3, youtube a mp4, 320kbps, 1080p, yt-dlp, flask, python downloader, descargas locales">
+  <meta name="author" content="Daniel Guevara">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://descargador-yt.localhost:5050/">
+  <meta property="og:title" content="YouTube Downloader Web | Descarga Video MP4 y Audio MP3">
+  <meta property="og:description" content="Herramienta local rápida y sin anuncios para guardar videos y audios de YouTube en máxima fidelidad acústica y visual.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/FloxTBoTyy/youtube-downloader-web/main/preview.png">
+
+  <!-- Twitter Card -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="http://descargador-yt.localhost:5050/">
+  <meta property="twitter:title" content="YouTube Downloader Web | MP4 & MP3">
+  <meta property="twitter:description" content="Descargador de YouTube local y autónomo con selección de calidad y conversión automática.">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "YouTube Downloader Web",
+    "url": "http://descargador-yt.localhost:5050/",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Linux, macOS, Windows",
+    "description": "Aplicación web ligera para descargar videos y audios de YouTube en formatos MP4 y MP3 con selección de calidad y progreso en vivo.",
+    "author": {
+      "@type": "Person",
+      "name": "Daniel Guevara"
+    }
+  }
+  </script>
+
+  <!-- Favicon (SVG YouTube Play Icon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'><path d='M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z'/></svg>">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between p-4 sm:p-8 selection:bg-red-500 selection:text-white">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-2xl mx-auto my-auto space-y-6">
+
+    <!-- Header -->
+    <header class="text-center space-y-3">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/25 text-red-400 text-xs font-semibold uppercase tracking-wider shadow-sm">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span>Descargas Locales en Máxima Fidelidad</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight flex items-center justify-center gap-3">
+        <span class="p-2.5 rounded-2xl bg-gradient-to-tr from-red-600 to-red-500 shadow-xl shadow-red-500/25 text-white ring-1 ring-white/20">
+          <i data-lucide="youtube" class="w-7 h-7"></i>
+        </span>
+        <span>YouTube <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-400">Downloader</span></span>
+      </h1>
+      <p class="text-zinc-400 text-sm max-w-md mx-auto leading-relaxed">
+        Pega cualquier enlace de YouTube para descargar video en <strong class="text-zinc-300">MP4</strong> o audio en <strong class="text-zinc-300">MP3</strong> eligiendo la calidad deseada. Sin publicidad y 100% privado.
+      </p>
+    </header>
+
+    <!-- Main Card -->
+    <div class="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden ring-1 ring-white/5">
+      <div class="absolute -top-24 -right-24 w-60 h-60 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Input Form -->
+      <form id="urlForm" class="space-y-4" onsubmit="event.preventDefault(); fetchVideoInfo();">
+        <label for="urlInput" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+          Enlace del Video de YouTube
+        </label>
+        <div class="relative flex items-center">
+          <div class="absolute left-4 text-zinc-500 pointer-events-none">
+            <i data-lucide="link" class="w-5 h-5"></i>
+          </div>
+          <input 
+            type="text" 
+            id="urlInput" 
+            placeholder="https://www.youtube.com/watch?v=... o https://youtu.be/..."
+            class="w-full bg-zinc-950/80 border border-zinc-700/80 rounded-2xl pl-12 pr-28 py-3.5 text-sm sm:text-base text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+            required
+          >
+          <div class="absolute right-2 flex items-center gap-1">
+            <button 
+              type="button" 
+              onclick="pasteClipboard()"
+              title="Pegar desde el portapapeles"
+              class="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-white bg-zinc-800/80 hover:bg-zinc-700 active:bg-zinc-600 rounded-xl transition flex items-center gap-1.5 border border-zinc-700/50"
+            >
+              <i data-lucide="clipboard" class="w-3.5 h-3.5"></i>
+              <span>Pegar</span>
+            </button>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          id="btnSearch"
+          class="w-full py-3.5 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white font-semibold rounded-2xl transition flex items-center justify-center gap-2 border border-zinc-700 shadow-sm"
+        >
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span id="btnSearchText">Obtener Información</span>
+        </button>
+      </form>
+
+      <!-- Video Preview Card (Initially Hidden) -->
+      <div id="videoCard" class="hidden mt-6 pt-6 border-t border-zinc-800/80 space-y-6 transition-all duration-300">
+        <div class="flex flex-col sm:flex-row gap-4 items-center bg-zinc-950/70 p-4 rounded-2xl border border-zinc-800/80">
+          <div class="relative w-full sm:w-44 aspect-video rounded-xl overflow-hidden bg-zinc-800 flex-shrink-0 shadow-md">
+            <img id="videoThumb" src="" alt="Miniatura del video" class="w-full h-full object-cover">
+            <span id="videoDuration" class="absolute bottom-1.5 right-1.5 px-2 py-0.5 text-[11px] font-bold bg-black/85 text-white rounded-md tracking-wider">--:--</span>
+          </div>
+          <div class="flex-1 min-w-0 text-center sm:text-left space-y-1">
+            <h3 id="videoTitle" class="font-bold text-zinc-100 text-base line-clamp-2 leading-snug"></h3>
+            <p id="videoChannel" class="text-xs text-zinc-400 flex items-center justify-center sm:justify-start gap-1.5">
+              <i data-lucide="user" class="w-3.5 h-3.5 text-zinc-500"></i>
+              <span id="channelName"></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Format & Quality Options -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- Format Selector -->
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+              1. Formato
+            </label>
+            <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-950/80 rounded-2xl border border-zinc-800">
+              <button 
+                type="button" 
+                id="btnFormatMp4" 
+                onclick="setFormat('mp4')"
+                class="py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition bg-red-600 text-white shadow-md shadow-red-600/30"
+              >
+                <i data-lucide="film" class="w-4 h-4"></i>
+                <span>Video MP4</span>
+              </button>
+              <button 
+                type="button" 
+                id="btnFormatMp3" 
+                onclick="setFormat('mp3')"
+                class="py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition text-zinc-400 hover:text-white"
+              >
+                <i data-lucide="music" class="w-4 h-4"></i>
+                <span>Audio MP3</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quality Selector -->
+          <div class="space-y-2">
+            <label id="qualityLabel" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+              2. Calidad de Video
+            </label>
+            <div class="relative">
+              <select 
+                id="qualitySelect"
+                class="w-full bg-zinc-950/80 border border-zinc-700 rounded-2xl px-4 py-3 text-sm text-zinc-100 appearance-none focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 cursor-pointer"
+              >
+                <!-- Populated dynamically via JS -->
+              </select>
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Download Action Button -->
+        <button 
+          type="button" 
+          id="btnDownload" 
+          onclick="startDownload()"
+          class="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 active:scale-[0.99] text-white font-bold text-base rounded-2xl shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-2"
+        >
+          <i data-lucide="download" class="w-5 h-5"></i>
+          <span id="btnDownloadText">Iniciar Descarga</span>
+        </button>
+      </div>
+
+      <!-- Progress Section (Initially Hidden) -->
+      <div id="progressSection" class="hidden mt-6 pt-6 border-t border-zinc-800 space-y-4">
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            <div id="statusSpinner" class="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+            <span id="statusText" class="font-semibold text-zinc-200">Preparando descarga...</span>
+          </div>
+          <span id="progressPercent" class="font-extrabold text-red-400 text-base">0%</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full h-3 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800/80 p-0.5">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-red-600 via-orange-500 to-amber-400 rounded-full transition-all duration-300 w-0"></div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-zinc-400">
+          <span id="speedText">Velocidad: --</span>
+          <span id="etaText">Tiempo restante: --</span>
+        </div>
+      </div>
+
+      <!-- Download Complete Actions (Initially Hidden) -->
+      <div id="completeSection" class="hidden mt-6 pt-6 border-t border-zinc-800 space-y-4 text-center">
+        <div class="inline-flex p-3 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 mb-1">
+          <i data-lucide="check-circle-2" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg text-zinc-100">¡Descarga Completada con Éxito!</h4>
+          <p id="finishedFileName" class="text-xs text-zinc-400 truncate max-w-sm mx-auto mt-1"></p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <a 
+            id="btnDirectSave" 
+            href="#" 
+            class="py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
+          >
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Guardar en el Navegador</span>
+          </a>
+
+          <button 
+            type="button" 
+            onclick="openLocalFolder()"
+            class="py-3 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold rounded-2xl border border-zinc-700 transition flex items-center justify-center gap-2"
+          >
+            <i data-lucide="folder-open" class="w-4 h-4"></i>
+            <span>Abrir Carpeta Local</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Toast/Message -->
+      <div id="errorMessage" class="hidden mt-4 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex items-start gap-3">
+        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-red-400 mt-0.5"></i>
+        <div class="flex-1" id="errorText">Ocurrió un error.</div>
+      </div>
+
+    </div>
+
+    <!-- Legal Disclaimer Card -->
+    <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 text-xs text-zinc-400 space-y-2">
+      <div class="flex items-center gap-2 text-zinc-300 font-semibold">
+        <i data-lucide="scale" class="w-4 h-4 text-amber-400"></i>
+        <span>Descargo de Responsabilidad Legal (Disclaimer)</span>
+      </div>
+      <p class="leading-relaxed text-zinc-400">
+        Esta herramienta ha sido desarrollada con fines exclusivamente <strong>educativos y de copia de seguridad personal</strong>. Está destinada a descargar contenido propio, material de dominio público o videos bajo licencias permisivas (como <em>Creative Commons</em>). No respaldamos ni promovemos la infracción de derechos de autor ni la distribución no autorizada de contenido protegido. Respeta siempre la propiedad intelectual y los Términos de Servicio de las plataformas de origen.
+      </p>
+    </div>
+
+    <!-- Quick Footer -->
+    <footer class="flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-2 px-2">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-zinc-400 font-medium">Servidor local activo en</span>
+        <code class="text-zinc-300 bg-zinc-900 px-1.5 py-0.5 rounded border border-zinc-800">descargador-yt.localhost:5050</code>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openLocalFolder()" class="hover:text-zinc-300 transition flex items-center gap-1">
+          <i data-lucide="folder" class="w-3.5 h-3.5"></i>
+          <span>Carpeta Descargas</span>
+        </button>
+        <span>•</span>
+        <a href="https://github.com/FloxTBoTyy/youtube-downloader-web" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-300 transition flex items-center gap-1 text-zinc-400 font-medium">
+          <i data-lucide="github" class="w-3.5 h-3.5"></i>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // State
+    let currentVideoInfo = null;
+    let selectedFormat = 'mp4';
+    let currentTaskId = null;
+    let pollInterval = null;
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    async function pasteClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          document.getElementById('urlInput').value = text;
+          fetchVideoInfo();
+        }
+      } catch (err) {
+        alert("Por favor permite el acceso al portapapeles o pega el enlace manualmente con Ctrl+V.");
+      }
+    }
+
+    function showError(msg) {
+      const errBox = document.getElementById('errorMessage');
+      const errText = document.getElementById('errorText');
+      errText.textContent = msg;
+      errBox.classList.remove('hidden');
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    async function fetchVideoInfo() {
+      hideError();
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) return;
+
+      const btn = document.getElementById('btnSearch');
+      const btnText = document.getElementById('btnSearchText');
+      btn.disabled = true;
+      btnText.textContent = "Consultando YouTube...";
+
+      try {
+        const res = await fetch('/api/info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "No se pudo obtener información del video.");
+        }
+
+        currentVideoInfo = data;
+        displayVideoInfo(data);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = "Obtener Información";
+      }
+    }
+
+    function displayVideoInfo(info) {
+      document.getElementById('videoThumb').src = info.thumbnail;
+      document.getElementById('videoDuration').textContent = info.duration;
+      document.getElementById('videoTitle').textContent = info.title;
+      document.getElementById('channelName').textContent = info.uploader;
+
+      // Update quality select for current format
+      updateQualityOptions();
+
+      // Show video card
+      document.getElementById('videoCard').classList.remove('hidden');
+      document.getElementById('completeSection').classList.add('hidden');
+      document.getElementById('progressSection').classList.add('hidden');
+      lucide.createIcons();
+    }
+
+    function setFormat(fmt) {
+      selectedFormat = fmt;
+      const btnMp4 = document.getElementById('btnFormatMp4');
+      const btnMp3 = document.getElementById('btnFormatMp3');
+      const label = document.getElementById('qualityLabel');
+
+      if (fmt === 'mp4') {
+        btnMp4.className = "py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition bg-red-600 text-white shadow-md shadow-red-600/30";
+        btnMp3.className = "py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition text-zinc-400 hover:text-white";
+        label.textContent = "2. Calidad de Video";
+      } else {
+        btnMp3.className = "py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition bg-red-600 text-white shadow-md shadow-red-600/30";
+        btnMp4.className = "py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition text-zinc-400 hover:text-white";
+        label.textContent = "2. Calidad de Audio";
+      }
+
+      updateQualityOptions();
+    }
+
+    function updateQualityOptions() {
+      const select = document.getElementById('qualitySelect');
+      select.innerHTML = '';
+
+      if (selectedFormat === 'mp4') {
+        const defaultOption = document.createElement('option');
+        defaultOption.value = 'best';
+        defaultOption.textContent = '⭐ Máxima disponible (Recomendado)';
+        select.appendChild(defaultOption);
+
+        const resolutions = (currentVideoInfo && currentVideoInfo.resolutions) ? currentVideoInfo.resolutions : [1080, 720, 480, 360];
+        resolutions.forEach(res => {
+          const opt = document.createElement('option');
+          opt.value = res;
+          let label = `${res}p`;
+          if (res >= 2160) label += " (4K Ultra HD)";
+          else if (res >= 1440) label += " (2K Quad HD)";
+          else if (res >= 1080) label += " (Full HD)";
+          else if (res >= 720) label += " (HD)";
+          else label += " (SD Ligero)";
+          opt.textContent = label;
+          select.appendChild(opt);
+        });
+      } else {
+        // MP3 Audio options
+        const mp3Options = [
+          { val: '320', label: '⭐ 320 kbps (Máxima fidelidad acústica)' },
+          { val: '256', label: '256 kbps (Muy alta calidad)' },
+          { val: '192', label: '192 kbps (Calidad estándar CD)' },
+          { val: '128', label: '128 kbps (Archivo ligero)' }
+        ];
+        mp3Options.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.val;
+          opt.textContent = item.label;
+          select.appendChild(opt);
+        });
+      }
+    }
+
+    async function startDownload() {
+      hideError();
+      const url = document.getElementById('urlInput').value.trim();
+      const quality = document.getElementById('qualitySelect').value;
+
+      if (!url) return;
+
+      const btn = document.getElementById('btnDownload');
+      btn.disabled = true;
+      document.getElementById('btnDownloadText').textContent = "Iniciando descarga...";
+
+      document.getElementById('progressSection').classList.remove('hidden');
+      document.getElementById('completeSection').classList.add('hidden');
+      updateProgressUI(0, 'Preparando entorno...', '--', '--');
+
+      try {
+        const res = await fetch('/api/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: url,
+            format: selectedFormat,
+            quality: quality
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Error al solicitar la descarga.");
+
+        currentTaskId = data.task_id;
+        pollProgress();
+      } catch (err) {
+        showError(err.message);
+        btn.disabled = false;
+        document.getElementById('btnDownloadText').textContent = "Iniciar Descarga";
+        document.getElementById('progressSection').classList.add('hidden');
+      }
+    }
+
+    function pollProgress() {
+      if (pollInterval) clearInterval(pollInterval);
+
+      pollInterval = setInterval(async () => {
+        if (!currentTaskId) return;
+
+        try {
+          const res = await fetch(`/api/progress/${currentTaskId}`);
+          if (!res.ok) return;
+          const data = await res.json();
+
+          if (data.status === 'downloading') {
+            updateProgressUI(data.progress, `Descargando ${selectedFormat.toUpperCase()}...`, data.speed, data.eta);
+          } else if (data.status === 'processing') {
+            updateProgressUI(99, 'Procesando y convirtiendo con FFmpeg...', '--', '--');
+          } else if (data.status === 'finished') {
+            clearInterval(pollInterval);
+            updateProgressUI(100, '¡Listo!', '--', '--');
+            showCompleted(data);
+          } else if (data.status === 'error') {
+            clearInterval(pollInterval);
+            showError(data.error || "Ocurrió un error durante la descarga.");
+            document.getElementById('btnDownload').disabled = false;
+            document.getElementById('btnDownloadText').textContent = "Iniciar Descarga";
+            document.getElementById('progressSection').classList.add('hidden');
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }, 1000);
+    }
+
+    function updateProgressUI(percent, status, speed, eta) {
+      document.getElementById('progressBar').style.width = `${percent}%`;
+      document.getElementById('progressPercent').textContent = `${percent}%`;
+      document.getElementById('statusText').textContent = status;
+      document.getElementById('speedText').textContent = `Velocidad: ${speed || '--'}`;
+      document.getElementById('etaText').textContent = `Tiempo restante: ${eta || '--'}`;
+    }
+
+    function showCompleted(task) {
+      document.getElementById('btnDownload').disabled = false;
+      document.getElementById('btnDownloadText').textContent = "Descargar Otro";
+      document.getElementById('progressSection').classList.add('hidden');
+
+      const comp = document.getElementById('completeSection');
+      comp.classList.remove('hidden');
+
+      const nameLabel = document.getElementById('finishedFileName');
+      nameLabel.textContent = `${task.filename} (${task.filesize})`;
+
+      const directBtn = document.getElementById('btnDirectSave');
+      directBtn.href = `/api/download-file/${currentTaskId}`;
+      directBtn.setAttribute('download', task.filename);
+
+      lucide.createIcons();
+    }
+
+    async function openLocalFolder() {
+      try {
+        const res = await fetch('/api/open-folder', { method: 'POST' });
+        const data = await res.json();
+        if (!data.success) {
+          alert("No se pudo abrir la carpeta automáticamente: " + data.error);
+        }
+      } catch (err) {
+        alert("Error al comunicarse con el servidor: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

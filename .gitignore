@@ -1,0 +1,20 @@
+# Entorno virtual
+.venv/
+venv/
+ENV/
+
+# Python cache y compilados
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Carpeta de descargas (para no subir videos o música a GitHub)
+downloads/*
+!downloads/.gitkeep
+
+# Archivos del sistema y logs
+*.log
+.DS_Store
+.vscode/
+.idea/
